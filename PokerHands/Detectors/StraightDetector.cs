@@ -10,13 +10,13 @@ namespace PokerHands
 
 		public bool DetermineIfPlayerHasStraight(out int winner1){
 			// One of the hands is a straight
-			if (_handRanker.isHand1AStraight || _handRanker.isHand2AStraight){
-				if (_handRanker.isHand1AStraight && !_handRanker.isHand2AStraight){
+			if (_handRanker.Player1Hand.IsAStraight || _handRanker.Player2Hand.IsAStraight){
+				if (_handRanker.Player1Hand.IsAStraight && !_handRanker.Player2Hand.IsAStraight){
 					winner1 = 1;
 					return true;
 				}
 
-				if (!_handRanker.isHand1AStraight){
+				if (!_handRanker.Player1Hand.IsAStraight){
 					winner1 = 2;
 					return true;
 				}

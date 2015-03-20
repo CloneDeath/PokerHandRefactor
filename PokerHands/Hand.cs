@@ -45,5 +45,46 @@ namespace PokerHands
 		public bool HasCards{
 			get { return _cards.Count > 0; }
 		}
+
+		public bool IsAStraight{
+			get{
+				int lowestHand2Value = ValueCountList.OrderBy(i => (int)i.Value).Select(i => (int)i.Value).FirstOrDefault();
+
+				bool isHandAStraight = ValueCountList.Count == 5;
+
+				if (isHandAStraight)
+				{
+					if (ValueCountList.Any(i => i.Value == CardValue.Ace))
+					{
+						for (var i = 0; i < 4; i++)
+						{
+							if (ValueCountList.Any(v => (int)v.Value == (i))) ;
+							else
+							{
+								isHandAStraight = false;
+
+								break;
+							}
+						}
+					}
+					else
+					{
+						foreach (var value in ValueCountList)
+						{
+							if (ValueCountList.Any(v => (int)v.Value == (lowestHand2Value)))
+								lowestHand2Value = lowestHand2Value + 1;
+							else
+							{
+								isHandAStraight = false;
+
+								break;
+							}
+						}
+					}
+				}
+
+				return isHandAStraight;
+			}
+		}
 	}
 }

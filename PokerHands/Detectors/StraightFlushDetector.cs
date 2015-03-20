@@ -10,13 +10,13 @@ namespace PokerHands
 
 		public bool DetermineIfPlayerHasStraightFlush(out int winner)
 		{
-			if ((_handRanker.Player1Hand.HasFlush && _handRanker.isHand1AStraight) || (_handRanker.Player2Hand.HasFlush && _handRanker.isHand2AStraight)){
-				if (!(_handRanker.Player1Hand.HasFlush && _handRanker.isHand1AStraight)){
+			if ((_handRanker.Player1Hand.HasFlush && _handRanker.Player1Hand.IsAStraight) || (_handRanker.Player2Hand.HasFlush && _handRanker.Player2Hand.IsAStraight)){
+				if (!(_handRanker.Player1Hand.HasFlush && _handRanker.Player1Hand.IsAStraight)){
 					winner = 2;
 					return true;
 				}
 
-				if (!(_handRanker.Player2Hand.HasFlush && _handRanker.isHand2AStraight)){
+				if (!(_handRanker.Player2Hand.HasFlush && _handRanker.Player2Hand.IsAStraight)){
 					winner = 1;
 					return true;
 				}
