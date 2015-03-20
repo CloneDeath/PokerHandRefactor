@@ -11,19 +11,19 @@ namespace PokerHands{
 		}
 
 		public bool DetermineIfPlayerHasAPair(out int winner){
-			// One of the hands have a pair
+			if (Player1Hand.HasPair && !Player2Hand.HasPair)
+			{
+				winner = 1;
+				return true;
+			}
+
+			if (!Player1Hand.HasPair && Player2Hand.HasPair)
+			{
+				winner = 2;
+				return true;
+			}
+
 			if (EitherPlayerHasPair){
-				if (Player1Hand.HasPair && !Player2Hand.HasPair)
-				{
-					winner = 1;
-					return true;
-				}
-
-				if (!Player1Hand.HasPair && Player2Hand.HasPair){
-					winner = 2;
-					return true;
-				}
-
 				var hand1PairValue = Player1Hand.ValueCountList.Where(i => i.Count == 2).Select(i => i.Value).FirstOrDefault();
 				var hand2PairValue = Player2Hand.ValueCountList.Where(i => i.Count == 2).Select(i => i.Value).FirstOrDefault();
 
@@ -40,6 +40,7 @@ namespace PokerHands{
 				Player1Hand.RemoveCardsWithCardValue(hand1PairValue);
 				Player2Hand.RemoveCardsWithCardValue(hand2PairValue);
 			}
+
 			winner = 0;
 			return false;
 		}

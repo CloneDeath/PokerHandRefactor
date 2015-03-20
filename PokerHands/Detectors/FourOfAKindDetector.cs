@@ -10,20 +10,20 @@ namespace PokerHands
 
 		public bool DetermineIfPlayerHasFourOfAKind(out int winner)
 		{
+			if (_handRanker.Player1Hand.HasFourOfAKind && !_handRanker.Player2Hand.HasFourOfAKind)
+			{
+				winner = 1;
+				return true;
+			}
+
+			if (_handRanker.Player2Hand.HasFourOfAKind && !_handRanker.Player1Hand.HasFourOfAKind)
+			{
+				winner = 2;
+				return true;
+			}
+
 			if (_handRanker.Player1Hand.HasFourOfAKind || _handRanker.Player2Hand.HasFourOfAKind)
 			{
-				if (_handRanker.Player1Hand.HasFourOfAKind && !_handRanker.Player2Hand.HasFourOfAKind)
-				{
-					winner = 1;
-					return true;
-				}
-
-				if (_handRanker.Player2Hand.HasFourOfAKind && !_handRanker.Player1Hand.HasFourOfAKind)
-				{
-					winner = 2;
-					return true;
-				}
-
 				var hand1FourOfAKindValue = _handRanker.Player1Hand.ValueCountList.Where(i => i.Count == 4).Select(i => (int) i.Value).FirstOrDefault();
 				var hand2FourOfAKindValue = _handRanker.Player2Hand.ValueCountList.Where(i => i.Count == 4).Select(i => (int) i.Value).FirstOrDefault();
 

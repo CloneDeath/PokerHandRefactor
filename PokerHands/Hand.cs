@@ -46,6 +46,10 @@ namespace PokerHands
 			get { return _cards.Count > 0; }
 		}
 
+		public bool HasFullHouse{
+			get { return HasPair && HasThreeOfAKind; }
+		}
+
 		public bool IsAStraight{
 			get{
 				int lowestHand2Value = ValueCountList.OrderBy(i => (int)i.Value).Select(i => (int)i.Value).FirstOrDefault();

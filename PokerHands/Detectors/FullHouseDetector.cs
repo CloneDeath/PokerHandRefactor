@@ -3,29 +3,18 @@ using System.Linq;
 namespace PokerHands
 {
 	public class FullHouseDetector{
-		private HandRanker _handRanker;
+		private Hand _player1Hand;
+		private Hand _player2Hand;
+
 		public FullHouseDetector(HandRanker handRanker){
-			_handRanker = handRanker;
+			_player1Hand = handRanker.Player1Hand;
+			_player2Hand = handRanker.Player2Hand;
 		}
 
-		public bool DetermineIfPlayerHasFullHouse(out int winner1)
+		public bool DetermineIfPlayerHasFullHouse(out int winner)
 		{
-			if ((_handRanker.Player1Hand.ValueCountList.Any(i => i.Count == 3) && _handRanker.Player1Hand.HasPair) ||
-			    (_handRanker.Player2Hand.ValueCountList.Any(i => i.Count == 3) && _handRanker.Player2Hand.HasPair)){
-				// Full house
-				if ((_handRanker.Player1Hand.ValueCountList.Any(i => i.Count == 3) && _handRanker.Player1Hand.HasPair) &&
-				    !(_handRanker.Player2Hand.ValueCountList.Any(i => i.Count == 3) && _handRanker.Player2Hand.HasPair)){
-					winner1 = 1;
-					return true;
-				}
-
-				if (!(_handRanker.Player1Hand.ValueCountList.Any(i => i.Count == 3) && _handRanker.Player1Hand.HasPair)){
-					winner1 = 2;
-					return true;
-				}
-			}
-			winner1 = 0;
-			return false;
+			winner = _player1Hand.HasFullHouse ? 1 : 2;
+			return _player1Hand.HasFullHouse ^ _player2Hand.HasFullHouse;
 		}
 	}
 }

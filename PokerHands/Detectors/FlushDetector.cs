@@ -5,20 +5,18 @@ namespace PokerHands{
 			_handRanker = handRanker;
 		}
 
-		public bool DetermineIfPlayerHasFlush(out int winner1)
+		public bool DetermineIfPlayerHasFlush(out int winner)
 		{
-			if (_handRanker.Player1Hand.HasFlush || _handRanker.Player2Hand.HasFlush){
-				if (_handRanker.Player1Hand.HasFlush && !_handRanker.Player2Hand.HasFlush){
-					winner1 = 1;
-					return true;
+			if (_handRanker.Player1Hand.HasFlush ^ _handRanker.Player2Hand.HasFlush){
+				if (_handRanker.Player1Hand.HasFlush){
+					winner = 1;
 				}
-
-				if (!_handRanker.Player1Hand.HasFlush){
-					winner1 = 2;
-					return true;
+				else{
+					winner = 2;
 				}
+				return true;
 			}
-			winner1 = 0;
+			winner = 0;
 			return false;
 		}
 	}
