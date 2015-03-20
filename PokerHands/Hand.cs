@@ -86,5 +86,9 @@ namespace PokerHands
 				return isHandAStraight;
 			}
 		}
+
+		public bool HasPair{
+			get { return ValueCountList.Any(i => i.Count == 2); }
+		}
 	}
 }

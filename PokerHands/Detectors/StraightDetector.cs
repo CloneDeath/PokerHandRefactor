@@ -46,11 +46,6 @@ namespace PokerHands
 					winner1 = 2;
 					return true;
 				}
-
-				{
-					winner1 = -1;
-					return true;
-				}
 			}
 			winner1 = 0;
 			return false;

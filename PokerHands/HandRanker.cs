@@ -3,21 +3,14 @@ using System.Linq;
 
 namespace PokerHands{
 	public class HandRanker{
-		private readonly Hand player1Hand;
-		private readonly Hand player2Hand;
-
 		public HandRanker(List<Card> hand1, List<Card> hand2){
-			player1Hand = new Hand(hand1);
-			player2Hand = new Hand(hand2);
+			Player1Hand = new Hand(hand1);
+			Player2Hand = new Hand(hand2);
 		}
 
-		public Hand Player1Hand{
-			get { return player1Hand; }
-		}
+		public Hand Player1Hand { get; private set; }
 
-		public Hand Player2Hand{
-			get { return player2Hand; }
-		}
+		public Hand Player2Hand { get; private set; }
 
 		public int GetWinner(){
 			int winner;
@@ -29,7 +22,7 @@ namespace PokerHands{
 			if (new ThreeOfAKindDetector(this).DetermineIfPlayerHasThreeOfAKind(out winner)) return winner;
 			if (new TwoPairDetector(this).DetermineIfPlayerHasTwoPairs(out winner)) return winner;
 			if (new PairDetector(this).DetermineIfPlayerHasAPair(out winner)) return winner;
-			return GetPlayerWithLargestHand(player1Hand, player2Hand);
+			return GetPlayerWithLargestHand(Player1Hand, Player2Hand);
 		}
 
 		static int GetPlayerWithLargestHand(Hand player1Hand, Hand player2Hand)
