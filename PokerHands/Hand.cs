@@ -13,7 +13,7 @@ namespace PokerHands
 			_cards = cards.ToList();
 		}
 
-		public List<ValueCount> GetValueCounts{
+		public List<ValueCount> ValueCountList{
 			get{
 				return _cards.GroupBy(i => i.CardValue).Select(g => new ValueCount{
 					Value = g.Key,
@@ -22,7 +22,7 @@ namespace PokerHands
 			}
 		}
 
-		public void RemovePairValue3CardsLeft(CardValue pairValue)
+		public void RemoveCardsWithCardValue(CardValue pairValue)
 		{
 			_cards = _cards.Where(i => i.CardValue != pairValue).ToList();
 		}

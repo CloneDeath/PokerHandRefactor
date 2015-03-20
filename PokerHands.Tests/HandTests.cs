@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -8,14 +9,6 @@ namespace PokerHands.Tests
     [Category("PokerHands.Tests")]
     public class HandTests
     {
-        private HandRanker _handRanker;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _handRanker = new HandRanker();
-        }
-
         [Test]
         public void Hand1FourOfAKindAcesWinsOverHand2Kings()
         {
@@ -1672,9 +1665,9 @@ namespace PokerHands.Tests
             RankHands(hand1, hand2, 1);
         }
 
-        private void RankHands(IList<Card> hand1, IList<Card> hand2, int expectedWinner)
-        {
-            var winner = _handRanker.RankHands(hand1, hand2);
+        private void RankHands(IList<Card> hand1, IList<Card> hand2, int expectedWinner){
+			HandRanker ranker = new HandRanker(hand1.ToList(), hand2.ToList());
+			var winner = ranker.GetWinner();
 
             winner.Should().Be(expectedWinner);
         }

@@ -1,246 +1,132 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace PokerHands
-{
-    public class HandRanker
-    {
-        public int RankHands(IList<Card> hand1, IList<Card> hand2){
-	        Hand player1Hand = new Hand(hand1);
-	        Hand player2Hand = new Hand(hand2);
+namespace PokerHands{
+	public class HandRanker{
+		private readonly Hand player1Hand;
+		private readonly Hand player2Hand;
+		public bool isHand1AStraight;
+		public bool isHand2AStraight;
+		private int lowestHand1Value;
+		private int lowestHand2Value;
+		private readonly PairDetector _pairDetector;
+		private readonly TwoPairDetector _twoPairDetector;
+		private readonly ThreeOfAKindDetector _threeOfAKindDetector;
+		private readonly StraightDetector _straightDetector;
+		private readonly FlushDetector _flushDetector;
+		private readonly FullHouseDetector _fullHouseDetector;
+		private readonly FourOfAKindDetector _fourOfAKindDetector;
+		private readonly StraightFlushDetector _straightFlushDetector;
 
-			List<ValueCount> hand1ByValues = player1Hand.GetValueCounts;
-	        List<ValueCount> hand2ByValues = player2Hand.GetValueCounts;
+		public HandRanker(List<Card> hand1, List<Card> hand2){
+			player1Hand = new Hand(hand1);
+			player2Hand = new Hand(hand2);
+			_pairDetector = new PairDetector(this);
+			_twoPairDetector = new TwoPairDetector(this);
+			_threeOfAKindDetector = new ThreeOfAKindDetector(this);
+			_straightDetector = new StraightDetector(this);
+			_flushDetector = new FlushDetector(this);
+			_fullHouseDetector = new FullHouseDetector(this);
+			_fourOfAKindDetector = new FourOfAKindDetector(this);
+			_straightFlushDetector = new StraightFlushDetector(this);
+		}
 
-            int lowestHand1Value = hand1ByValues.OrderBy(i => (int)i.Value).Select(i => (int)i.Value).FirstOrDefault();
+		public Hand Player1Hand{
+			get { return player1Hand; }
+		}
 
-            bool isHand1AStraight = hand1ByValues.Count == 5;
+		public Hand Player2Hand{
+			get { return player2Hand; }
+		}
 
-            if (hand1ByValues.Count == 5)
-            {
-                if (hand1ByValues.Any(i => i.Value == CardValue.Ace))
-                {
-                    for (var i = 0; i < 4; i++)
-                    {
-                        if (hand1ByValues.Any(v => (int)v.Value == (i))) ;
-                        else
-                        {
-                            isHand1AStraight = false;
+		public int GetWinner(){
+			CheckIfHand1IsAStraight();
+			CheckIfHand2IsAStraight();
 
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    for (var i = 0; i < hand1ByValues.Count; i++)
-                    {
-                        if (hand1ByValues.Any(v => (int)v.Value == (lowestHand1Value))) lowestHand1Value = lowestHand1Value + 1;
-                        else
-                        {
-                            isHand1AStraight = false;
-
-                            break;
-                        }
-                    }
-                }
-            }
-
-            var lowestHand2Value = hand2ByValues.OrderBy(i => (int)i.Value).Select(i => (int)i.Value).FirstOrDefault();
-
-            var isHand2AStraight = hand2ByValues.Count == 5;
-
-            if (hand2ByValues.All(i => i.Count > 0 && i.Count < 2))
-            {
-                if (hand2ByValues.Any(i => i.Value == CardValue.Ace))
-                {
-                    for (var i = 0; i < 4; i++)
-                    {
-                        if (hand2ByValues.Any(v => (int)v.Value == (i))) ;
-                        else
-                        {
-                            isHand2AStraight = false;
-
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (var value in hand2ByValues)
-                    {
-                        if (hand2ByValues.Any(v => (int)v.Value == (lowestHand2Value))) lowestHand2Value = lowestHand2Value + 1;
-                        else
-                        {
-                            isHand2AStraight = false;
-
-                            break;
-                        }
-                    }
-                }
-            }
-
-	        var hand1Flush = player1Hand.HasFlush;
-	        var hand2Flush = player2Hand.HasFlush;
-
-            if ((hand1Flush && isHand1AStraight) || (hand2Flush && isHand2AStraight))
-            {
-                if (!(hand1Flush && isHand1AStraight)) return 2;
-
-                if (!(hand2Flush && isHand2AStraight)) return 1;
-
-                var hand1MaxValue = hand1ByValues.OrderByDescending(i => (int)i.Value).Select(i => (int)i.Value).FirstOrDefault();
-                var hand2MaxValue = hand2ByValues.OrderByDescending(i => (int)i.Value).Select(i => (int)i.Value).FirstOrDefault();
-
-                if (hand1MaxValue == 12)
-                {
-                    var lowCard = hand1ByValues.OrderBy(i => i.Value).Select(i => (int)i.Value).FirstOrDefault();
-
-                    if (lowCard == 0) hand1MaxValue = 3;
-                }
-
-                if (hand2MaxValue == 12)
-                {
-                    var lowCard = hand2ByValues.OrderBy(i => i.Value).Select(i => (int)i.Value).FirstOrDefault();
-
-                    if (lowCard == 0) hand2MaxValue = 3;
-                }
-
-                if (hand1MaxValue > hand2MaxValue) return 1;
-
-                if (hand1MaxValue < hand2MaxValue) return 2;
-            }
-
-            if (hand1ByValues.Any(i => i.Count == 4) || hand2ByValues.Any(i => i.Count == 4))
-            {
-                if (hand1ByValues.Any(i => i.Count == 4) && hand2ByValues.All(i => i.Count != 4)) return 1;
-
-                if (hand2ByValues.Any(i => i.Count == 4) && hand1ByValues.All(i => i.Count != 4)) return 2;
-
-                var hand1FourOfAKindValue = hand1ByValues.Where(i => i.Count == 4).Select(i => (int)i.Value).FirstOrDefault();
-                var hand2FourOfAKindValue = hand2ByValues.Where(i => i.Count == 4).Select(i => (int)i.Value).FirstOrDefault();
-
-                if (hand1FourOfAKindValue > hand2FourOfAKindValue) return 1;
-
-                if (hand2FourOfAKindValue > hand1FourOfAKindValue) return 2;
-            }
-
-            if ((hand1ByValues.Any(i => i.Count == 3) && hand1ByValues.Any(i => i.Count == 2)) || (hand2ByValues.Any(i => i.Count == 3) && hand2ByValues.Any(i => i.Count == 2)))
-            {
-                // Full house
-                if ((hand1ByValues.Any(i => i.Count == 3) && hand1ByValues.Any(i => i.Count == 2)) && !(hand2ByValues.Any(i => i.Count == 3) && hand2ByValues.Any(i => i.Count == 2))) return 1;
-
-                if (!(hand1ByValues.Any(i => i.Count == 3) && hand1ByValues.Any(i => i.Count == 2))) return 2;
-            }
-
-            if (hand1Flush || hand2Flush)
-            {
-                if (hand1Flush && !hand2Flush) return 1;
-
-                if (!hand1Flush) return 2;
-            }
-
-            // One of the hands is a straight
-            if (isHand1AStraight || isHand2AStraight)
-            {
-                if (isHand1AStraight && !isHand2AStraight) return 1;
-
-                if (!isHand1AStraight) return 2;
-
-                // Both are Straights
-                var hand1HighCard = hand1ByValues.OrderByDescending(i => i.Value).Select(i => (int)i.Value).FirstOrDefault();
-                var hand2HighCard = hand2ByValues.OrderByDescending(i => i.Value).Select(i => (int)i.Value).FirstOrDefault();
-
-                if (hand1HighCard == 12)
-                {
-                    var lowCard = hand1ByValues.OrderBy(i => i.Value).Select(i => (int)i.Value).FirstOrDefault();
-
-                    if (lowCard == 0) hand1HighCard = 3;
-                }
-
-                if (hand2HighCard == 12)
-                {
-                    var lowCard = hand2ByValues.OrderBy(i => i.Value).Select(i => (int)i.Value).FirstOrDefault();
-
-                    if (lowCard == 0) hand2HighCard = 3;
-                }
-
-                if (hand1HighCard > hand2HighCard) return 1;
-
-                if (hand1HighCard < hand2HighCard) return 2;
-
-                return -1;
-            }
-
-            // One of the Hands have 3 of a Kind
-            if (hand1ByValues.Any(i => i.Count == 3) || hand2ByValues.Any(i => i.Count == 3))
-            {
-                var hand1ThreeOfAKindValue = hand1ByValues.Where(i => i.Count == 3).Select(i => i.Value).FirstOrDefault();
-                var hand2ThreeOfAKindValue = hand2ByValues.Where(i => i.Count == 3).Select(i => i.Value).FirstOrDefault();
-
-                if (hand1ThreeOfAKindValue > hand2ThreeOfAKindValue) return 1;
-
-                if (hand2ThreeOfAKindValue > hand1ThreeOfAKindValue) return 2;
-            }
-
-            // One of the hands have 2 pairs
-            if (hand1ByValues.Count(i => i.Count == 2) == 2 || hand2ByValues.Count(i => i.Count == 2) == 2)
-            {
-                if (hand1ByValues.Count(i => i.Count == 2) == 2 && hand2ByValues.Count(i => i.Count == 2) != 2) return 1;
-
-                if (hand2ByValues.Count(i => i.Count == 2) == 2 && hand1ByValues.Count(i => i.Count == 2) != 2) return 2;
-
-                // Both Have 2 Pair find Highest Pair Value
-                var hand1HighestPairValue = hand1ByValues.Where(i => i.Count == 2).OrderByDescending(i => i.Value).Select(i => i.Value).FirstOrDefault();
-                var hand2HighestPairValue = hand2ByValues.Where(i => i.Count == 2).OrderByDescending(i => i.Value).Select(i => i.Value).FirstOrDefault();
-
-                if (hand1HighestPairValue > hand2HighestPairValue) return 1;
-
-                if (hand1HighestPairValue < hand2HighestPairValue) return 2;
-
-                // Same Highest Pair must compare next
-                hand1ByValues = hand1ByValues.Where(i => i.Value != hand1HighestPairValue).ToList();
-                hand2ByValues = hand2ByValues.Where(i => i.Value != hand2HighestPairValue).ToList();
-            }
-
-            // One of the hands have a pair
-            if (hand1ByValues.Any(i => i.Count == 2) || hand2ByValues.Any(i => i.Count == 2))
-            {
-                if (hand1ByValues.Any(i => i.Count == 2) && hand2ByValues.All(i => i.Count != 2)) return 1;
-
-                if (hand1ByValues.All(i => i.Count != 2) && hand2ByValues.Any(i => i.Count == 2)) return 2;
-
-                var hand1PairValue = hand1ByValues.Where(i => i.Count == 2).Select(i => i.Value).FirstOrDefault();
-                var hand2PairValue = hand2ByValues.Where(i => i.Count == 2).Select(i => i.Value).FirstOrDefault();
-
-                if (hand1PairValue > hand2PairValue) return 1;
-                if (hand1PairValue < hand2PairValue) return 2;
-
-                // Remove Pair Values 3 Cards Left
-	            player1Hand.RemovePairValue3CardsLeft(hand1PairValue);
-				player2Hand.RemovePairValue3CardsLeft(hand2PairValue);
-            }
-
+			int winner;
+			if (_straightFlushDetector.DetermineIfPlayerHasStraightFlush(out winner)) return winner;
+			if (_fourOfAKindDetector.DetermineIfPlayerHasFourOfAKind(out winner)) return winner;
+			if (_fullHouseDetector.DetermineIfPlayerHasFullHouse(out winner)) return winner;
+			if (_flushDetector.DetermineIfPlayerHasFlush(out winner)) return winner;
+			if (_straightDetector.DetermineIfPlayerHasStraight(out winner)) return winner;
+			if (_threeOfAKindDetector.DetermineIfPlayerHasThreeOfAKind(out winner)) return winner;
+			if (_twoPairDetector.DetermineIfPlayerHasTwoPairs(out winner)) return winner;
+			if (_pairDetector.DetermineIfPlayerHasAPair(out winner)) return winner;
 			return GetPlayerWithLargestHand(player1Hand, player2Hand);
-        }
+		}
 
+		public void CheckIfHand2IsAStraight()
+		{
+			lowestHand2Value = player2Hand.ValueCountList.OrderBy(i => (int) i.Value).Select(i => (int) i.Value).FirstOrDefault();
 
+			isHand2AStraight = player2Hand.ValueCountList.Count == 5;
 
-		private static int GetPlayerWithLargestHand(Hand player1Hand, Hand player2Hand)
-        {
-            do
-            {
+			if (player2Hand.ValueCountList.All(i => i.Count > 0 && i.Count < 2)){
+				if (player2Hand.ValueCountList.Any(i => i.Value == CardValue.Ace)){
+					for (var i = 0; i < 4; i++){
+						if (player2Hand.ValueCountList.Any(v => (int) v.Value == (i))) ;
+						else{
+							isHand2AStraight = false;
+
+							break;
+						}
+					}
+				}
+				else{
+					foreach (var value in player2Hand.ValueCountList){
+						if (player2Hand.ValueCountList.Any(v => (int) v.Value == (lowestHand2Value)))
+							lowestHand2Value = lowestHand2Value + 1;
+						else{
+							isHand2AStraight = false;
+
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		public void CheckIfHand1IsAStraight()
+		{
+			lowestHand1Value = player1Hand.ValueCountList.OrderBy(i => (int) i.Value).Select(i => (int) i.Value).FirstOrDefault();
+			isHand1AStraight = player1Hand.ValueCountList.Count == 5;
+
+			if (isHand1AStraight){
+				if (player1Hand.ValueCountList.Any(i => i.Value == CardValue.Ace)){
+					for (var i = 0; i < 4; i++){
+						if (player1Hand.ValueCountList.Any(v => (int) v.Value == (i))) ;
+						else{
+							isHand1AStraight = false;
+
+							break;
+						}
+					}
+				}
+				else{
+					for (var i = 0; i < player1Hand.ValueCountList.Count; i++){
+						if (player1Hand.ValueCountList.Any(v => (int) v.Value == (lowestHand1Value)))
+							lowestHand1Value = lowestHand1Value + 1;
+						else{
+							isHand1AStraight = false;
+
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		public static int GetPlayerWithLargestHand(Hand player1Hand, Hand player2Hand)
+		{
+			do{
 				if (player1Hand.GetLargestCardValue() > player2Hand.GetLargestCardValue()) return 1;
 				if (player1Hand.GetLargestCardValue() < player2Hand.GetLargestCardValue()) return 2;
 
-	            player1Hand.RemoveLargestCardValue();
+				player1Hand.RemoveLargestCardValue();
 				player2Hand.RemoveLargestCardValue();
+			} while (player1Hand.HasCards);
 
-            } while (player1Hand.HasCards);
-
-            return -1;
-        }
-
-        
-    }
+			return -1;
+		}
+	}
 }
