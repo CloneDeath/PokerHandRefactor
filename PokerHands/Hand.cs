@@ -90,5 +90,13 @@ namespace PokerHands
 		public bool HasPair{
 			get { return ValueCountList.Any(i => i.Count == 2); }
 		}
+
+		public bool HasFourOfAKind{
+			get { return ValueCountList.Any(i => i.Count == 4); }
+		}
+
+		public bool HasThreeOfAKind{
+			get { return ValueCountList.Any(i => i.Count == 3); }
+		}
 	}
 }

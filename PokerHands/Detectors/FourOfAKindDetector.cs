@@ -8,16 +8,19 @@ namespace PokerHands
 			_handRanker = handRanker;
 		}
 
-		public bool DetermineIfPlayerHasFourOfAKind(out int winner1)
+		public bool DetermineIfPlayerHasFourOfAKind(out int winner)
 		{
-			if (_handRanker.Player1Hand.ValueCountList.Any(i => i.Count == 4) || _handRanker.Player2Hand.ValueCountList.Any(i => i.Count == 4)){
-				if (_handRanker.Player1Hand.ValueCountList.Any(i => i.Count == 4) && _handRanker.Player2Hand.ValueCountList.All(i => i.Count != 4)){
-					winner1 = 1;
+			if (_handRanker.Player1Hand.HasFourOfAKind || _handRanker.Player2Hand.HasFourOfAKind)
+			{
+				if (_handRanker.Player1Hand.HasFourOfAKind && !_handRanker.Player2Hand.HasFourOfAKind)
+				{
+					winner = 1;
 					return true;
 				}
 
-				if (_handRanker.Player2Hand.ValueCountList.Any(i => i.Count == 4) && _handRanker.Player1Hand.ValueCountList.All(i => i.Count != 4)){
-					winner1 = 2;
+				if (_handRanker.Player2Hand.HasFourOfAKind && !_handRanker.Player1Hand.HasFourOfAKind)
+				{
+					winner = 2;
 					return true;
 				}
 
@@ -25,16 +28,16 @@ namespace PokerHands
 				var hand2FourOfAKindValue = _handRanker.Player2Hand.ValueCountList.Where(i => i.Count == 4).Select(i => (int) i.Value).FirstOrDefault();
 
 				if (hand1FourOfAKindValue > hand2FourOfAKindValue){
-					winner1 = 1;
+					winner = 1;
 					return true;
 				}
 
 				if (hand2FourOfAKindValue > hand1FourOfAKindValue){
-					winner1 = 2;
+					winner = 2;
 					return true;
 				}
 			}
-			winner1 = 0;
+			winner = 0;
 			return false;
 		}
 	}
